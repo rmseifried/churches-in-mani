@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Churches in Mani</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      h2 {
+        margin: 10px;
+        font-size: 1.2em;
+      }
+      h3 {
+        font-size: 1.2em;
+      }
+      p {
+        font-size: 1.1em;
+      }
+      #info {
+        font-size: 0.9em;
+        margin: 10px;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      .map-overlay {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.8);
+        margin-right: 20px;
+        font-family: Arial, sans-serif;
+        overflow: auto;
+        border-radius: 3px;
+      }
+      #features {
+        top: 0;
+        height: 210px;
+        margin-top: 20px;
+        width: 250px;
+      }
+      #legend {
+        padding: 10px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        line-height: 18px;
+        height: 80px;
+        margin-bottom: 40px;
+        width: 100px;
+      }
+      .legend-key {
+        display: inline-block;
+        border-radius: 20%;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='map'></div>
+    <div class='map-overlay' id='features'>
+      <h2>Churches in Mani</h2>
+      <div><p id="info">These are the locations of over 700 Orthodox churches in the Mani Peninsula, Greece.</p>
+        <p id="info">Some of the churches haven't been identified yet, but others have a name and information about when they were built and used.</p>
+        <p id="info">Click to learn more!</p></div>
+    </div>
+    <div class='map-overlay' id='legend'>
+    </div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1Ijoicm1zZWlmcmllZCIsImEiOiJjazlhZGF1ZXkwYmw4M2hzMndrbDZobDg0In0.xTB5wfA78NNDFSCBrmTbtg';
+      var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/rmseifried/ck9bmkolf07pg1ilm1j9iitwc',
+        center: [22.435,36.566],
+        zoom: 9.8
+      });
+      map.on('click', function(e) {
+        var features = map.queryRenderedFeatures(e.point, {
+          layers: ['all-churches-03psqt']
+        });
+        if (!features.length) {
+          return;
+        }
+        var feature = features[0];
+        var popup = new mapboxgl.Popup({ offset: [0, -6] })
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML('<h3>' + feature.properties.Name + '</h3><p>' + feature.properties.Chronology + '</p>')
+        .addTo(map);
+      });
+      map.on('load', function() {
+        var layers = ['Modern', 'Ottoman', 'Byzantine', 'Unknown'];
+        var colors = ['#2c4ed8', '#dacd3e', '#ab0303', '#000000'];
+        for (i = 0; i < layers.length; i++) {
+          var layer = layers[i];
+          var color = colors[i];
+          var item = document.createElement('div');
+          var key = document.createElement('span');
+          key.className = 'legend-key';
+          key.style.backgroundColor = color;
+          var value = document.createElement('span');
+          value.innerHTML = layer;
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        }
+      });
+      map.getCanvas().style.cursor = 'default';
+    </script>
+  </body>
+</html>
